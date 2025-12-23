@@ -1,0 +1,18 @@
+# config/packages/error_handling.yaml
+# config/packages/framework.yaml
+# Ref: https://symfony.com/doc/current/controller/error_pages.html#overriding-the-default-errorcontroller
+
+framework:
+    error_controller: App\Controller\ErrorController::show
+
+# Environment-specific overrides
+when@dev:
+    framework:
+        # In dev, let Symfony show detailed errors
+        #error_controller: PRR\Collection\Controller\ErrorController::show
+        error_controller: null
+
+when@prod:
+    framework:
+        # In prod, use custom error controller
+        error_controller: App\Controller\ErrorController::show

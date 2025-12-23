@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    db:
+        driver: '%env(DATABASE_DRIVER)%'
+        host: '%env(DATABASE_HOST)%'
+        user: '%env(DATABASE_USER)%'
+        pass: '%env(DATABASE_PASS)%'
+        db:   '%env(DATABASE_DB)%'
+        ssl:  '%env(DATABASE_SSL)%'
+    app.view.page_title: 'Symfony Skeleton App'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+    #    exclude:
+    
+    weatherUSA\PHPUtil\:
+        resource: '../lib/PHPUtil'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    weatherUSA\PHPUtil\MyPDO:
+        factory: ['weatherUSA\PHPUtil\MyPDO', 'connectAC']
+        arguments: ['%db%']
+
+    weatherUSA\PHPUtil\MyPDOFactory:
+        factory: ['weatherUSA\PHPUtil\MyPDO', 'connectAC']
+        arguments: ['%db%']
+        shared: false
+
+    app.db:
+        alias: weatherUSA\PHPUtil\MyPDO
+        public: true
+
+    app.db_factory:
+        alias: weatherUSA\PHPUtil\MyPDOFactory
+        public: true
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        arguments:
+            - '@app.db'
+            - { lock_mode: 1 }
+
+    app.session:
+        alias: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        public: true
+
+    weatherUSA\PHPUtil\PhpEngineWebTemplate:
+        factory: ['weatherUSA\PHPUtil\PhpEngineWebTemplate', 'factory']
+        arguments:
+            $page_title: '%app.view.page_title%'
+            $template_storage_path: '%kernel.project_dir%/templates'
+            $path: '@router'
+            #$session: '@app.session' # not in symfony 6+, use rs->getSession() instead
+            $rs: '@request_stack'
+            $df: '@weatherUSA\PHPUtil\DateFormatter'
+
