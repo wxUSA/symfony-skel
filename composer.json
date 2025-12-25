@@ -18,13 +18,13 @@
         "symfony/mailer": "7.4.*",
         "symfony/monolog-bundle": "^4.0.1",
         "symfony/runtime": "7.4.*",
-        "symfony/stopwatch": "7.4.*",
         "symfony/templating": "7.0.x-dev",
         "symfony/twig-bundle": "7.4.*",
         "symfony/yaml": "7.4.*",
         "wrpn/powerform-php": "dev-master"
     },
     "require-dev": {
+        "symfony/stopwatch": "7.4.*",
         "symfony/web-profiler-bundle": "7.4.*"
     },
     "repositories": [
@@ -75,7 +75,8 @@
             "@php bin/console cache:clear",
             "@fix-var-perms"
         ],
-        "fix-var-perms": "sudo chown -R apache:apache var/"
+        "fix-var-perms": "sudo chown -R apache:apache var/",
+        "setup-db": "@php bin/console app:setup-database"
     },
     "conflict": {
         "symfony/symfony": "*"

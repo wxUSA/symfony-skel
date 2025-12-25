@@ -15,6 +15,7 @@ parameters:
         db:   '%env(DATABASE_DB)%'
         ssl:  '%env(DATABASE_SSL)%'
     app.view.page_title: 'Symfony Skeleton App'
+    app.email_webmaster: '%env(EMAIL_WEBMASTER)%'
 
 services:
     # default configuration for services in *this* file
@@ -33,11 +34,14 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
     weatherUSA\PHPUtil\MyPDO:
         factory: ['weatherUSA\PHPUtil\MyPDO', 'connectAC']
         arguments: ['%db%']
+        # lazy: true  # Not needed - factory already delays instantiation
 
-    weatherUSA\PHPUtil\MyPDOFactory:
+    app.db.factory:
+        class: weatherUSA\PHPUtil\MyPDO
         factory: ['weatherUSA\PHPUtil\MyPDO', 'connectAC']
         arguments: ['%db%']
         shared: false
@@ -46,10 +50,9 @@ services:
         alias: weatherUSA\PHPUtil\MyPDO
         public: true
 
-    app.db_factory:
-        alias: weatherUSA\PHPUtil\MyPDOFactory
-        public: true
+    weatherUSA\PHPUtil\MyPDO $dbFactory: '@app.db.factory'
 
+    # Pitfall: @app.db always creates a DB connection because the argument must be resolved at runtime
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         arguments:
             - '@app.db'
@@ -65,7 +68,7 @@ services:
             $page_title: '%app.view.page_title%'
             $template_storage_path: '%kernel.project_dir%/templates'
             $path: '@router'
-            #$session: '@app.session' # not in symfony 6+, use rs->getSession() instead
+            #$session: '@app.session' # not in symfony 6+, uses rs->getSession() inside class instead
             $rs: '@request_stack'
             $df: '@weatherUSA\PHPUtil\DateFormatter'
 

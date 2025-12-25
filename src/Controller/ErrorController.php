@@ -32,7 +32,7 @@ class ErrorController extends AbstractController
 		return $this->render('error/exception.html.twig', [
 			'exception_message' => $exception->getMessage(),
 			'referer' => $referer,
-			'webmaster_email' => EMAIL_CURATOR,
+			'webmaster_email' => $this->getParameter('app.email_webmaster'),
 			'show_details' => $this->getParameter('kernel.environment') !== 'prod',
 			'status_code' => $statusCode,
 			'status_text' => $statusText
