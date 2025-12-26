@@ -14,7 +14,7 @@ class DateFormatter
 			$date->setTimezone(new DateTimeZone($tz));
 		}
 		catch(Exception $e) {
-			// Fallback to box office config default
+			// Fallback to php.ini default TZ
 			$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
 		}
 		return $date->format($format);
