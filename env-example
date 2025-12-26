@@ -39,3 +39,5 @@ DATABASE_SSL=on
 # Use Sendmail command line from php.ini
 MAILER_DSN=native://default
 ###< symfony/mailer ###
+
+EMAIL_WEBMASTER=webmaster@localhost
